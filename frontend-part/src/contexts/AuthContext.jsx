@@ -111,9 +111,12 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
     
     try {
+      // Remove confirmPassword field before sending to API
+      const { confirmPassword, ...apiData } = userData;
+      
       const response = isPartner 
-        ? await authAPI.partnerRegister(userData)
-        : await authAPI.register(userData);
+        ? await authAPI.partnerRegister(apiData)
+        : await authAPI.register(apiData);
 
       const { user, partner, token, credentials } = response.data.data;
       const userDataResponse = user || partner;
