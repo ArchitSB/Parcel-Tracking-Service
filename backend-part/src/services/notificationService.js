@@ -9,7 +9,21 @@ class NotificationService {
   }
 
   createEmailTransporter() {
-    return nodemailer.createTransporter({
+    // Use test configuration if email credentials are not provided
+    if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      logger.warn('Email configuration not provided, using test account');
+      return nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+          user: 'ethereal.user@ethereal.email',
+          pass: 'ethereal.pass'
+        }
+      });
+    }
+
+    return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
       secure: false,
