@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
+import { shipmentsAPI } from '../services/api';
 import { 
   Package, 
   Search, 
@@ -51,7 +51,7 @@ const ShipmentsList = () => {
         if (!params[key]) delete params[key];
       });
 
-      const response = await api.get('/shipments', { params });
+      const response = await shipmentsAPI.getPartnerShipments(params);
       
       const shipmentsData = response.data.data?.shipments || [];
       const paginationData = response.data.data?.pagination || {};

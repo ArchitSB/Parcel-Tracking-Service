@@ -62,10 +62,17 @@ export const AuthProvider = ({ children }) => {
     const userType = localStorage.getItem('userType');
 
     if (token && user) {
+      const userData = JSON.parse(user);
+      
+      // Ensure partner has a role field for consistency
+      if (userType === 'partner' && !userData.role) {
+        userData.role = 'partner';
+      }
+      
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: {
-          user: JSON.parse(user),
+          user: userData,
           type: userType,
           token,
         },
@@ -84,6 +91,11 @@ export const AuthProvider = ({ children }) => {
       const { user, partner, token } = response.data.data;
       const userData = user || partner;
       const type = user ? 'user' : 'partner';
+      
+      // Ensure partner has a role field for consistency
+      if (partner && !partner.role) {
+        userData.role = 'partner';
+      }
 
       // Store in localStorage
       localStorage.setItem('token', token);
@@ -121,6 +133,11 @@ export const AuthProvider = ({ children }) => {
       const { user, partner, token, credentials } = response.data.data;
       const userDataResponse = user || partner;
       const type = user ? 'user' : 'partner';
+      
+      // Ensure partner has a role field for consistency
+      if (partner && !partner.role) {
+        userDataResponse.role = 'partner';
+      }
 
       // Store in localStorage
       localStorage.setItem('token', token);

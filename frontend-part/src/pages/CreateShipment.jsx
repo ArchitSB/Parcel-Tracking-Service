@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
+import { shipmentsAPI } from '../services/api';
 import { Package, MapPin, User, Phone, Mail, Truck } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -61,7 +61,58 @@ const CreateShipment = () => {
     setLoading(true);
     
     try {
-      const response = await api.post('/shipments', formData);
+      // Transform form data to match backend schema
+      const shipmentData = {
+        sender: {
+          name: formData.senderName,
+          email: formData.senderEmail || undefined,
+          phone: formData.senderPhone || undefined,
+          address: {
+            street: formData.senderAddress,
+            city: 'Default City', // TODO: Add separate city field or parse from address
+            state: 'Default State', // TODO: Add separate state field or parse from address  
+            zipCode: '00000', // TODO: Add separate zipCode field or parse from address
+            country: 'USA' // TODO: Add country selection
+          }
+        },
+        recipient: {
+          name: formData.receiverName,
+          email: formData.receiverEmail || undefined,
+          phone: formData.receiverPhone || undefined,
+          address: {
+            street: formData.receiverAddress,
+            city: 'Default City', // TODO: Add separate city field or parse from address
+            state: 'Default State', // TODO: Add separate state field or parse from address
+            zipCode: '00000', // TODO: Add separate zipCode field or parse from address
+            country: 'USA' // TODO: Add country selection
+          }
+        },
+        package: {
+          description: formData.packageDescription,
+          weight: formData.weight ? {
+            value: parseFloat(formData.weight),
+            unit: 'kg'
+          } : undefined,
+          dimensions: (formData.dimensions.length && formData.dimensions.width && formData.dimensions.height) ? {
+            length: parseFloat(formData.dimensions.length),
+            width: parseFloat(formData.dimensions.width),
+            height: parseFloat(formData.dimensions.height),
+            unit: 'cm'
+          } : undefined,
+          value: formData.value ? {
+            amount: parseFloat(formData.value),
+            currency: 'USD'
+          } : undefined,
+          fragile: false
+        },
+        serviceType: formData.serviceType,
+        metadata: {
+          priority: formData.priority,
+          notes: formData.notes
+        }
+      };
+
+      const response = await shipmentsAPI.create(shipmentData);
       
       toast.success('Shipment created successfully!');
       
@@ -91,6 +142,7 @@ const CreateShipment = () => {
       }
       
     } catch (error) {
+      console.error('Shipment creation error:', error);
       toast.error(error.response?.data?.message || 'Failed to create shipment');
     } finally {
       setLoading(false);

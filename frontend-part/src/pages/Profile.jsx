@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
+import { usersAPI } from '../services/api';
 import { User, Mail, Phone, MapPin, Calendar, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -22,7 +22,7 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await api.get('/users/me');
+      const response = await usersAPI.getProfile();
       const userData = response.data.data.user;
       setProfile(userData);
       setFormData({
@@ -50,7 +50,7 @@ const Profile = () => {
     setLoading(true);
     
     try {
-      const response = await api.put('/users/me', formData);
+      const response = await usersAPI.updateProfile(formData);
       const userData = response.data.data.user;
       setProfile(userData);
       setEditMode(false);

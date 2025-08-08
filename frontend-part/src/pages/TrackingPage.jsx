@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import { shipmentsAPI, notificationsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import {
   Package,
@@ -43,7 +43,7 @@ const TrackingPage = () => {
     setError(null);
     
     try {
-      const response = await api.get(`/shipments/${trackingNumber}`);
+      const response = await shipmentsAPI.getByTracking(trackingNumber);
       setShipment(response.data.data?.shipment || response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Shipment not found');
@@ -64,7 +64,7 @@ const TrackingPage = () => {
     setSubscribing(true);
     
     try {
-      await api.post('/notifications/subscribe', {
+      await notificationsAPI.subscribe({
         trackingNumber,
         email: subscribeEmail,
         preferences: {

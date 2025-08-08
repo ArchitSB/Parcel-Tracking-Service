@@ -69,7 +69,6 @@ const trackingEventSchema = new mongoose.Schema({
 const shipmentSchema = new mongoose.Schema({
   trackingNumber: {
     type: String,
-    required: true,
     unique: true,
     uppercase: true
   },
